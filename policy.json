@@ -1,0 +1,13 @@
+{
+  "Id": "Policy1558204035048",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1558204031531",
+      "Action": "s3:*",
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::baladigitalcloud-static-site1-vu/*",
+      "Principal": "*"
+    }
+  ]
+}
