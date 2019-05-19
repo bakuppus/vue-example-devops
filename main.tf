@@ -24,7 +24,7 @@ provider "aws" {
 
 #Static website
 resource "aws_s3_bucket" "baladigitalcloud-static-site1-vu" {
-  bucket = "baladigitalcloud-static-site1-vu"
+  bucket = "${var.www_domain_name}"
   acl    = "public-read"
   policy = "${file("policy.json")}"
 
@@ -34,6 +34,82 @@ resource "aws_s3_bucket" "baladigitalcloud-static-site1-vu" {
 
   }
 }
+
+##########
+
+resource "aws_cloudfront_distribution" "www_distribution" {
+  origin {
+
+      custom_origin_config {
+      http_port              = "80"
+      https_port             = "443"
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
+    }
+    domain_name = "${aws_s3_bucket.baladigitalcloud-static-site1-vu.website_endpoint}"
+    origin_id   = "${var.www_domain_name}"
+  }
+
+  enabled             = true
+  default_root_object = "index.html"
+
+  default_cache_behavior {
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = "${var.www_domain_name}"
+   
+  forwarded_values {
+    query_string = false
+  
+  cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "allow-all"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 86400
+  }
+ 
+ aliases = ["${var.www_domain_name}"]
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+#    cloudfront_default_certificate = true
+    acm_certificate_arn = "arn:aws:acm:us-east-1:702401326258:certificate/b4606606-f041-4411-b8a8-e0a8daf76b9c"
+    ssl_support_method  = "sni-only"
+  }
+}
+
+
+##########
+
+// We want AWS to host our zone so its nameservers can point to our CloudFront
+// distribution.
+#resource "aws_route53_zone" "zone" {
+#  name = "${var.root_domain_name}"
+#}
+
+// This Route53 record will point at our CloudFront distribution.
+resource "aws_route53_record" "baladigitalcloud-static-site1-vu" {
+  zone_id = "Z1FTMWX6SDFIEW"
+  name    = "${var.www_domain_name}"
+  type    = "A"
+
+  alias = {
+    name                   = "${aws_cloudfront_distribution.www_distribution.domain_name}"
+    zone_id                = "${aws_cloudfront_distribution.www_distribution.hosted_zone_id}"
+    evaluate_target_health = false
+  }
+}
+
+##########
 
 # CodePipeline resources
 resource "aws_s3_bucket" "build_artifact_bucket" {
@@ -243,4 +319,5 @@ resource "aws_codepipeline" "codepipeline" {
       }
     }
   }
+
 }

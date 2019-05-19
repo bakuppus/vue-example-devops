@@ -6,7 +6,7 @@
       "Sid": "Stmt1558204031531",
       "Action": "s3:*",
       "Effect": "Allow",
-      "Resource": "arn:aws:s3:::baladigitalcloud-static-site1-vu/*",
+      "Resource": "arn:aws:s3:::baladigitalcloud-static-site1-vu.baladigitalcloud.com/*",
       "Principal": "*"
     }
   ]

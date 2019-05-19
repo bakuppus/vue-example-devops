@@ -13,4 +13,4 @@ phases:
  post_build:
    commands:
      - echo "post_build step"
-     - aws s3 sync --delete dist/. "s3://baladigitalcloud-static-site1-vu"
+     - aws s3 sync --delete dist/. "s3://baladigitalcloud-static-site1-vu.baladigitalcloud.com"
