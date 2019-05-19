@@ -82,7 +82,7 @@ resource "aws_cloudfront_distribution" "www_distribution" {
 
   viewer_certificate {
 #    cloudfront_default_certificate = true
-    acm_certificate_arn = "arn:aws:acm:us-east-1:702401326258:certificate/b4606606-f041-4411-b8a8-e0a8daf76b9c"
+    acm_certificate_arn = "arn:aws:acm:us-east-1:702401326258:certificate/b4606606-f041-4411-b8a8-e0a8daf76c"
     ssl_support_method  = "sni-only"
   }
 }
@@ -98,7 +98,7 @@ resource "aws_cloudfront_distribution" "www_distribution" {
 
 // This Route53 record will point at our CloudFront distribution.
 resource "aws_route53_record" "baladigitalcloud-static-site1-vu" {
-  zone_id = "Z1FTMWX6SDFIEW"
+  zone_id = "Z1FTMWX6SMFIEW"
   name    = "${var.www_domain_name}"
   type    = "A"
 
